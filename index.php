@@ -35,9 +35,12 @@ switch ($sanitised_request_uri) {
 
     case "/filter%20titles":
         include(__DIR__ . "/pages/filter-titles.php");
-    break;
+        break;
 
     case "/edit%20title":
         include(__DIR__ . "/pages/edit-title.php");
-    break;
+        break;
+
+    default:
+        include(__DIR__ . "/pages/error.php");
 }

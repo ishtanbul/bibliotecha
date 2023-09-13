@@ -20,8 +20,7 @@ class Database
     public static function connect(string $path_to_env_file)
     {
         if (!preg_match("/.env/i", $path_to_env_file)) {
-            error_log("Expecting an environment variable file");
-            exit(1);
+            self::redirect_to_error_page(500, "Expecting an environment variable file");
         }
         $env = parse_ini_file($path_to_env_file);
         self::$user = $env["MYSQL_USER"];
@@ -57,16 +56,14 @@ class Database
     public static function get_title($title_id)
     {
         if (empty($title_id) || !is_numeric($title_id)) {
-            error_log("Problem with the Title ID");
-            exit(1);
+            self::redirect_to_error_page(500, "Invalid Title ID");
         }
 
         $statement = self::$connection->prepare("SELECT titles.title FROM titles WHERE titles.id = ?");
 
         $bind_success = $statement->bind_param("i", $title_id);
         if (!$bind_success) {
-            error_log("Failure in binding");
-            exit(1);
+            self::redirect_to_error_page(500, "Failure in binding");
         }
         $statement->execute();
 
@@ -82,8 +79,7 @@ class Database
     public static function get_authors($title_id)
     {
         if (empty($title_id) || !is_numeric($title_id)) {
-            error_log("Problem with the Title ID");
-            exit(1);
+            self::redirect_to_error_page(500, "Invalid Title ID");
         }
 
         $statement = self::$connection->prepare("SELECT authors.id, authors.name FROM authors INNER JOIN authors_join_titles 
@@ -92,8 +88,7 @@ class Database
 
         $bind_success = $statement->bind_param("i", $title_id);
         if (!$bind_success) {
-            error_log("Failure in binding");
-            exit(1);
+            self::redirect_to_error_page(500, "Failure in binding");
         }
         $authors_info = [];
         $statement->execute();
@@ -112,8 +107,6 @@ class Database
     public static function get_genre($title_id)
     {
         if (empty($title_id) || !is_numeric($title_id)) {
-            error_log("Problem with the Title ID");
-            exit(1);
         }
 
         $statement = self::$connection->prepare("SELECT genre.id, genre.genre FROM genre INNER JOIN genre_join_titles 
@@ -122,8 +115,7 @@ class Database
 
         $bind_success = $statement->bind_param("i", $title_id);
         if (!$bind_success) {
-            error_log("Failure in binding");
-            exit(1);
+            self::redirect_to_error_page(500, "Failure in binding");
         }
         $genre_info = [];
         $statement->execute();
@@ -144,16 +136,14 @@ class Database
     {
 
         if (empty($author_id_list) || empty($title) || empty($genre_id_list)) {
-            echo ("Error in insertion");
-            exit(1);
+            self::redirect_to_error_page(400, "Something wrong with the values you entered");
         }
 
 
         $statement = self::$connection->prepare("INSERT INTO titles VALUES (NULL, ?)");
         $bind_success = $statement->bind_param("s", $title);
         if (!$bind_success) {
-            echo ("Failure in binding");
-            exit(1);
+            self::redirect_to_error_page(500, "Failure in binding");
         }
         $statement->execute();
         $title_id = $statement->insert_id;
@@ -165,16 +155,14 @@ class Database
     private static function insert_title_genre_assoc(array $genre_id_list, $title_id)
     {
         if (empty($genre_id_list) || empty($title_id)) {
-            error_log("Empty parameter");
-            exit(1);
+            self::redirect_to_error_page(500, "Invalid empty parameters");
         }
 
         foreach ($genre_id_list as $genre_id) {
             $statement = self::$connection->prepare("INSERT INTO genre_join_titles VALUES (?, ?)");
             $bind_success = $statement->bind_param("ii", $title_id, $genre_id);
             if (!$bind_success) {
-                echo ("Failure in binding");
-                exit(1);
+                self::redirect_to_error_page(500, "Failure in binding");
             }
 
             $statement->execute();
@@ -185,16 +173,14 @@ class Database
     private static function insert_title_author_assoc(array $author_id_list, $title_id)
     {
         if (empty($author_id_list) || empty($title_id)) {
-            error_log("Empty parameter");
-            exit(1);
+            self::redirect_to_error_page(500, "Invalid empty parameters");
         }
 
         foreach ($author_id_list as $author_id) {
             $statement = self::$connection->prepare("INSERT INTO authors_join_titles VALUES (?, ?)");
             $bind_success = $statement->bind_param("ii", $author_id, $title_id);
             if (!$bind_success) {
-                echo ("Failure in binding");
-                exit(1);
+                self::redirect_to_error_page(500, "Failure in binding");
             }
             $statement->execute();
             $statement->free_result();
@@ -205,15 +191,13 @@ class Database
     public static function delete_title($id)
     {
         if (empty($id) || !is_numeric($id)) {
-            echo ("Error in ID");
-            exit(1);
+            self::redirect_to_error_page(500, "Invalid Title ID");
         }
 
         $statement = self::$connection->prepare("DELETE FROM titles WHERE titles.id = ?");
         $bind_success = $statement->bind_param("i", $id);
         if (!$bind_success) {
-            echo ("Failure in binding");
-            exit(1);
+            self::redirect_to_error_page(500, "Failure in binding");
         }
         $statement->execute();
     }
@@ -221,15 +205,13 @@ class Database
     private static function delete_title_author_assoc($title_id)
     {
         if (empty($title_id) || !is_numeric($title_id)) {
-            echo ("Error in ID");
-            exit(1);
+            self::redirect_to_error_page(500, "Invalid Title ID");
         }
 
         $statement = self::$connection->prepare("DELETE FROM authors_join_titles WHERE authors_join_titles.titles_id = ?");
         $bind_success = $statement->bind_param("i", $title_id);
         if (!$bind_success) {
-            echo ("Failure in binding");
-            exit(1);
+            self::redirect_to_error_page(500, "Failure in binding");
         }
         $statement->execute();
     }
@@ -238,7 +220,7 @@ class Database
     {
 
         if (empty($title_id) || !is_numeric($title_id)) {
-            return;
+            self::redirect_to_error_page(500, "Failure in binding");
         }
         self::delete_title_author_assoc($title_id);
         self::insert_title_author_assoc($author_id_list, $title_id);
@@ -247,15 +229,13 @@ class Database
     private static function delete_title_genre_assoc($title_id)
     {
         if (empty($title_id) || !is_numeric($title_id)) {
-            echo ("Error in ID");
-            exit(1);
+            self::redirect_to_error_page(500, "Invalid Title ID");
         }
 
         $statement = self::$connection->prepare("DELETE FROM genre_join_titles WHERE genre_join_titles.titles_id = ?");
         $bind_success = $statement->bind_param("i", $title_id);
         if (!$bind_success) {
-            echo ("Failure in binding");
-            exit(1);
+            self::redirect_to_error_page(500, "Failure in binding");
         }
         $statement->execute();
     }
@@ -264,7 +244,7 @@ class Database
     {
 
         if (empty($title_id) || !is_numeric($title_id)) {
-            return;
+            self::redirect_to_error_page(500, "Invalid Title ID");
         }
         self::delete_title_genre_assoc($title_id);
         self::insert_title_genre_assoc($genre_id_list, $title_id);
@@ -273,18 +253,17 @@ class Database
     public static function update_title($title, $title_id)
     {
         if (empty($title_id) || !is_numeric($title_id)) {
-            return;
+            self::redirect_to_error_page(500, "Invalid Title ID");
         }
 
         if (empty($title)) {
-            return;
+            self::redirect_to_error_page(400, "Empty title");
         }
 
         $statement = self::$connection->prepare("UPDATE titles SET titles.title = ? WHERE titles.id = ?");
         $bind_success = $statement->bind_param("si", $title, $title_id);
         if (!$bind_success) {
-            echo ("Failure in binding");
-            exit(1);
+            self::redirect_to_error_page(500, "Failure in binding");
         }
         $statement->execute();
     }
@@ -292,15 +271,14 @@ class Database
     public static function filter_titles_by_author($author_id)
     {
         if (empty($author_id) || !is_numeric($author_id)) {
-            return;
+            self::redirect_to_error_page(500, "Failure in binding");
         }
 
         $statement = self::$connection->prepare("SELECT authors_join_titles.titles_id FROM authors_join_titles WHERE authors_join_titles.authors_id = ?");
 
         $bind_success = $statement->bind_param("i", $author_id);
         if (!$bind_success) {
-            echo ("Failure in binding");
-            exit(1);
+            self::redirect_to_error_page(500, "Failure in binding");
         }
         $statement->execute();
 
@@ -329,8 +307,7 @@ class Database
         $result = self::$connection->query($statement);
 
         if (!$result) {
-            echo ("No data");
-            exit(1);
+            self::redirect_to_error_page(500, "No author data in database");
         }
 
         $all_authors = [];
@@ -349,8 +326,7 @@ class Database
         $result = self::$connection->query($statement);
 
         if (!$result) {
-            echo ("No data");
-            exit(1);
+            self::redirect_to_error_page(500, "No genre data");
         }
 
         $all_genre = [];
@@ -359,5 +335,13 @@ class Database
             $all_genre[] = array("id" => $row["id"], "genre" => $row["genre"]);
         }
         return $all_genre;
+    }
+
+    private static function redirect_to_error_page($http_status_code, $message)
+    {
+        error_log($message);
+        $url = "/error?status=$http_status_code&message=$message";
+        header("Location: $url");
+        exit(1);
     }
 }
