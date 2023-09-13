@@ -2,10 +2,10 @@
 
 header("Content-Type: text/html");
 header("Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE");
+session_start();
+include(__DIR__ . "/api/database.php");
 
-include (__DIR__."/api/database.php");
-
-Database::connect(__DIR__."/api/.env");
+Database::connect(__DIR__ . "/api/.env");
 
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
@@ -24,7 +24,7 @@ switch ($sanitised_request_uri) {
         include(__DIR__ . "/pages/home.php");
 
         break;
-        
+
     case "/submit":
         include(__DIR__ . "/pages/actions.php");
         break;
@@ -32,4 +32,12 @@ switch ($sanitised_request_uri) {
     case "/new%20title":
         include(__DIR__ . "/pages/new-title.php");
         break;
+
+    case "/filter%20titles":
+        include(__DIR__ . "/pages/filter-titles.php");
+    break;
+
+    case "/edit%20title":
+        include(__DIR__ . "/pages/edit-title.php");
+    break;
 }

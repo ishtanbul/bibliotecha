@@ -15,6 +15,7 @@
 
 <body>
     <a class="btn btn-primary" href="/new%20title">Insert Books</a>
+    <a class="btn btn-primary" href="/filter%20titles">Filter Titles </a>
 <?php
 
     include("/var/www/html/bibliotecha/partials/modal.php");

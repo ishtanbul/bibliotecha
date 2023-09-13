@@ -14,11 +14,11 @@
     // include("/var/www/html/bibliotecha/components/select.php");
     include("/var/www/html/bibliotecha/components/select.php");
     $authors = Database::get_all_authors();
-   
+
     $add_title_author_multiselect = new SelectComponent(
         "add-title-author-multiselect",
         ["author-multiselect"],
-        "author_id",
+        "author_id[]",
         $authors,
         null,
         "name",
@@ -26,6 +26,10 @@
         true,
         5
     );
+
+    $genre = Database::get_all_genre();
+
+    $add_title_genre_multiselect = new SelectComponent("add-title-genre-multiselect", ["genre-multiselect"], "genre_id[]", $genre, null, "genre", "id", true, 5);
 
     ?>
 
@@ -35,6 +39,8 @@
             <input type="text" class="title-field" name="title">
             <label for="add-title-form" class="author-label">Enter author: </label>
             <?php echo $add_title_author_multiselect->render_component(); ?>
+            <label for="add-title-form" class="genre-label">Enter genre: </label>
+            <?php echo $add_title_genre_multiselect->render_component(); ?>
         </div>
         <input value="insert_title" name="action" hidden>
         <button type="submit" class="btn btn-primary">Submit</button>
