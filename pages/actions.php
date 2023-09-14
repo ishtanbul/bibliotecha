@@ -35,13 +35,49 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     }
 
     if ($_GET["action"] == "filter_titles") {
-        validate_field("author_id", "Invalid author ID", 400);
-        $author_id = $_GET["author_id"];
-        $url = "/?filter&author_id={$author_id}";
+        $url = filter_titles();
     }
 
     $_GET = array();
     header("Location: $url");
+}
+
+
+function filter_titles()
+{
+
+    if (array_key_exists("author_required", $_GET) && array_key_exists("genre_required", $_GET) && array_key_exists("option", $_GET)) {
+        validate_field("author_id", "Invalid author ID", 400);
+        validate_field("genre_id", "Invalid genre ID", 400);
+        $author_id = $_GET["author_id"];
+        $genre_id = $_GET["genre_id"];
+        $option = $_GET["option"];
+        return "/?filter&author_id={$author_id}&option={$option}&genre_id={$genre_id}";
+    }
+    if (array_key_exists("author_required", $_GET)) {
+        validate_field("author_id", "Invalid author ID", 400);
+        $author_id = $_GET["author_id"];
+        return "/?filter&author_id={$author_id}";
+    }
+
+    if (array_key_exists("genre_required", $_GET)) {
+        validate_field("genre_id", "Invalid genre ID", 400);
+        $genre_id = $_GET["genre_id"];
+        return "/?filter&genre_id={$genre_id}";
+    }
+
+    return "/";
+    // if($_GET["author_required"])
+    // 
+
+    // validate_field("genre_id", "Invalid genre ID", 400);
+    // $author_id = $_GET["author_id"];
+    // $genre_id = $_GET["genre_id"];
+
+    // if($_GET["author_required"]=="true" && $_GET["genre_required"]=="true") {
+    //     $url = "/?filter&author_id={$author_id}&and&genre_id={$genre_id}";
+    // }
+    // $url = "/?filter&author_id={$author_id}";
 }
 
 function validate_field($index, $message, $status)

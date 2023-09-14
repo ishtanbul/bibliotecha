@@ -1,6 +1,16 @@
 <?php
 
+enum FilterType
+{
+    case AUTHOR;
+    case GENRE;
+}
 
+enum FilterOption
+{
+    case AND;
+    case OR;
+}
 class Database
 {
 
@@ -270,6 +280,23 @@ class Database
 
     public static function filter_titles_by_author($author_id)
     {
+        $title_id_list = self::get_title_id_by_author($author_id);
+
+        $filtered_titles = [];
+
+        while ($row = $title_id_list->fetch_assoc()) {
+            $title_id = $row["titles_id"];
+            $title_name = self::get_title($title_id);
+            $authors = self::get_authors($title_id);
+            $genre = self::get_genre($title_id);
+            $filtered_titles[] = array("id" => $title_id, "title" => $title_name, "authors" => $authors, "genre" => $genre);
+        }
+        return $filtered_titles;
+    }
+
+
+    private static function get_title_id_by_author($author_id)
+    {
         if (empty($author_id) || !is_numeric($author_id)) {
             self::redirect_to_error_page(500, "Failure in binding");
         }
@@ -286,6 +313,13 @@ class Database
 
         $statement->free_result();
 
+        return $title_id_list;
+    }
+
+    public static function filter_titles_by_genre($genre_id)
+    {
+        $title_id_list = self::get_title_id_by_genre($genre_id);
+
         $filtered_titles = [];
 
         while ($row = $title_id_list->fetch_assoc()) {
@@ -297,6 +331,29 @@ class Database
         }
         return $filtered_titles;
     }
+
+    private static function get_title_id_by_genre($genre_id)
+    {
+        if (empty($genre_id) || !is_numeric($genre_id)) {
+            self::redirect_to_error_page(500, "Failure in binding");
+        }
+
+        $statement = self::$connection->prepare("SELECT genre_join_titles.titles_id FROM genre_join_titles WHERE genre_join_titles.genre_id = ?");
+
+        $bind_success = $statement->bind_param("i", $genre_id);
+        if (!$bind_success) {
+            self::redirect_to_error_page(500, "Failure in binding");
+        }
+        $statement->execute();
+
+        $title_id_list = $statement->get_result();
+
+        $statement->free_result();
+
+        return $title_id_list;
+    }
+
+
 
 
 
@@ -343,5 +400,60 @@ class Database
         $url = "/error?status=$http_status_code&message=$message";
         header("Location: $url");
         exit(1);
+    }
+
+
+    /** Filters */
+
+    private static function query_title_id(FilterType $type, $id): array
+    {
+        switch ($type) {
+            case FilterType::AUTHOR:
+                $title_id_list = self::get_title_id_by_author($id);
+                break;
+            case FilterType::GENRE:
+                $title_id_list = self::get_title_id_by_genre($id);
+                break;
+            default:
+        }
+        $title_id_arr = [];
+        while ($row = $title_id_list->fetch_assoc()) {
+            $title_id_arr[] = $row["titles_id"];
+        }
+        return $title_id_arr;
+    }
+    private static function and(FilterType $type_a, $id_a, FilterType $type_b, $id_b): array
+    {
+        $title_id_list_a = self::query_title_id($type_a, $id_a);
+        $title_id_list_b = self::query_title_id($type_b, $id_b);
+        return array_intersect($title_id_list_a, $title_id_list_b);
+    }
+
+
+    private static function or(FilterType $type_a, $id_a, FilterType $type_b, $id_b): array
+    {
+        $title_id_list_a = self::query_title_id($type_a, $id_a);
+        $title_id_list_b = self::query_title_id($type_b, $id_b);
+        return array_diff(array_merge($title_id_list_a, $title_id_list_b), array_intersect($title_id_list_a, $title_id_list_b));
+    }
+
+    public static function filter(FilterType $type_a, $id_a, FilterOption $option, FilterType $type_b, $id_b)
+    {
+        $title_id_list = [];
+        if ($option == FilterOption::AND) {
+            $title_id_list = self::and($type_a, $id_a, $type_b, $id_b);
+        } else {
+            $title_id_list = self::or($type_a, $id_a, $type_b, $id_b);
+        }
+        $filtered_titles = [];
+
+        foreach ($title_id_list as $title_id) {
+
+            $title_name = self::get_title($title_id);
+            $authors = self::get_authors($title_id);
+            $genre = self::get_genre($title_id);
+            $filtered_titles[] = array("id" => $title_id, "title" => $title_name, "authors" => $authors, "genre" => $genre);
+        }
+        return $filtered_titles;
     }
 }

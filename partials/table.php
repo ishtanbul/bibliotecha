@@ -29,7 +29,7 @@ function render_book_row($book_row)
     $genre = $book_row["genre"];
     $selected_genre = join_genre($genre);
 
-   
+
 
 
 
@@ -72,7 +72,7 @@ function render_book_row($book_row)
 <script>
     let openDeleteModal = function(id) {}
     let deleteBookRow = function() {}
- 
+
 
     $(document).ready(function() {
 
@@ -116,7 +116,7 @@ function render_book_row($book_row)
 
             }
 
-         
+
             ?>
 
         </tbody>
@@ -132,11 +132,26 @@ function get_titles()
 {
 
     if (array_key_exists("filter", $_GET)) {
-        if (!empty($author_id = $_GET["author_id"]) && is_numeric($author_id)) {
+        if (($author_id = validate_in_get_req("author_id")) && ($genre_id = validate_in_get_req("genre_id")) && ($option = validate_in_get_req("option"))) {
+            if ($option == "and") {
+                return Database::filter(FilterType::AUTHOR, $author_id, FilterOption::AND, FilterType::GENRE, $genre_id);
+            }
+            if ($option == "or") {
+                return Database::filter(FilterType::AUTHOR, $author_id, FilterOption::OR, FilterType::GENRE, $genre_id);
+            }
+        } else if ($author_id = validate_in_get_req("author_id")) {
             return Database::filter_titles_by_author($author_id);
+        } else if ($genre_id = validate_in_get_req("genre_id")) {
+            return Database::filter_titles_by_genre($genre_id);
         }
     }
     return Database::get_all_titles();
 }
 
+function validate_in_get_req(string $index)
+{
+    if (array_key_exists($index, $_GET) && !empty($_GET[$index]))
+        return $_GET[$index];
+    return false;
+}
 ?>
