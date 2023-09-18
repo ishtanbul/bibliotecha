@@ -5,8 +5,11 @@ header("Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE");
 
 include(__DIR__ . "/api/database.php");
 
-// Database::connect(__DIR__ . "/api/prod.env");
-Database::connect(__DIR__ . "/api/dev.env");
+if (isset($_ENV["PROD_MODE"])) {
+    Database::connect(__DIR__ . "/api/prod.env");
+} else {
+    Database::connect(__DIR__ . "/api/dev.env");
+}
 
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
