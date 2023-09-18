@@ -32,6 +32,8 @@ class Database
         if (!preg_match("/.env/i", $path_to_env_file)) {
             self::redirect_to_error_page(500, "Expecting an environment variable file");
         }
+
+
         $env = parse_ini_file($path_to_env_file);
         self::$user = $env["MYSQL_USER"];
         self::$password = $env["MYSQL_PASSWORD"];
