@@ -33,7 +33,7 @@
 
     ?>
 
-    <form id="add-title-form" action="/submit">
+    <form id="add-title-form" method="post" action="/api/post/title">
         <div id="add-settings-1" class="action-settings">
             <label for="add-title-form" class="title-label">Enter book title: </label>
             <input type="text" class="title-field" name="title">

@@ -42,7 +42,7 @@
 
     ?>
 
-    <form id="edit-title-form" action="/submit">
+    <form id="edit-title-form" method="post" action="/api/update/title">
         <div id="add-settings-1" class="action-settings">
         <input name="title_id" value="<?php echo $title_id ?>" hidden>
             <label for="edit-title-form" class="title-label">Enter book title: </label>

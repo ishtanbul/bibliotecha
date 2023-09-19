@@ -53,7 +53,7 @@ function render_book_row($book_row)
                     <a id='delete-$id' class='btn' href='#' onclick='openDeleteModal($id); return false;'> 
                         <i class='fa fa-trash trash-can-color' aria-hidden='true'></i>
                     </a>
-                    <a id='edit-$id'class='btn' href='/edit%20title?id=$id'> 
+                    <a id='edit-$id'class='btn' href='/edit-title?id=$id'> 
                         <i class='fa fa-pen-to-square edit-color' aria-hidden='true'></i>
                     </a>
                
@@ -84,7 +84,7 @@ function render_book_row($book_row)
         })
 
         deleteBookRow = function() {
-            location.assign(`/submit?action=delete_title&title_id=${deleteId}`);
+            location.assign(`/api/delete/title/${deleteId}`);
         }
 
         openDeleteModal = function(id) {
@@ -109,8 +109,8 @@ function render_book_row($book_row)
         </thead>
         <tbody>
             <?php
-
-            foreach ($all_books = get_titles() as $book_row) {
+       
+            foreach ($all_books = $data as $book_row) {
                 echo render_book_row($book_row);
                 // echo json_encode($book_row);
 
@@ -128,25 +128,7 @@ function render_book_row($book_row)
 
 <?php
 
-function get_titles()
-{
 
-    if (array_key_exists("filter", $_GET)) {
-        if (($author_id = validate_in_get_req("author_id")) && ($genre_id = validate_in_get_req("genre_id")) && ($option = validate_in_get_req("option"))) {
-            if ($option == "and") {
-                return Database::filter(FilterType::AUTHOR, $author_id, FilterOption::AND, FilterType::GENRE, $genre_id);
-            }
-            if ($option == "or") {
-                return Database::filter(FilterType::AUTHOR, $author_id, FilterOption::OR, FilterType::GENRE, $genre_id);
-            }
-        } else if ($author_id = validate_in_get_req("author_id")) {
-            return Database::filter_titles_by_author($author_id);
-        } else if ($genre_id = validate_in_get_req("genre_id")) {
-            return Database::filter_titles_by_genre($genre_id);
-        }
-    }
-    return Database::get_all_titles();
-}
 
 function validate_in_get_req(string $index)
 {

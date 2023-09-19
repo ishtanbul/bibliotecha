@@ -31,7 +31,7 @@
 
     ?>
 
-    <form id="filter-title-form" action="/submit">
+    <form id="filter-title-form" method="post" action="/api/filter/title">
         <div id="filter-settings" class="action-settings">
             <label for="filter-title-form" class="author-label">Enter author: </label>
             <input type="checkbox" id="author-required" name="author_required" unchecked />
