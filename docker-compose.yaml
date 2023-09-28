@@ -1,0 +1,62 @@
+version: "3.3"
+
+services:
+
+  app:
+    container_name: bibliotecha-app
+    build: ./app
+    ports:
+      - "5000:3000"
+    restart: always
+    depends_on:
+      - server
+    networks:
+      - biblink
+
+
+  server:
+    container_name: bibliotecha-server
+    build: ./server
+    ports:
+      - "5001:80"
+    restart: always
+    depends_on:
+      - database
+    networks:
+      - biblink
+
+  database:
+    container_name: bibliotecha-database
+    image: mysql:8.0.34-debian
+    restart: always
+    env_file:
+      - ./server/api/prod.env
+    ports:
+      - "5002:3306"
+    volumes:
+      - persist-data:/var/lib/mysql
+    networks:
+      - biblink
+
+  database-client:
+    container_name: bibliotecha-database-client
+    image: phpmyadmin/phpmyadmin:latest
+    restart: always
+    env_file:
+      - ./server/api/prod.env
+    environment:
+      PMA_HOST: "database"
+    depends_on:
+      - database
+    ports:
+      - "5003:80"
+    networks:
+      - biblink
+
+volumes:
+  persist-data:
+
+
+networks:
+  biblink:
+    driver: bridge

@@ -1,0 +1,11 @@
+.filter-group {
+    height: fit-content;
+    width: fit-content;
+    padding: 1em;
+    background-color: #DDD;
+
+    & .identifier {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+}
