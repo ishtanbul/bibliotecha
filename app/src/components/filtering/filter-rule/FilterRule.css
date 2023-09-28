@@ -1,0 +1,22 @@
+.filter-rule {
+  width: 25em;
+}
+
+.filter-rule .body {
+  height: fit-content;
+  background-color: #a9a9a9;
+  padding: 1em;
+}
+
+.filter-rule-identifier {
+  width: inherit;
+  padding-right: 2px;
+}
+
+.saved {
+  color: 	#5cb85c;
+}
+
+.unsaved {
+  color: #808080;
+}

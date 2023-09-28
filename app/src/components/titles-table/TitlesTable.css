@@ -1,0 +1,37 @@
+.orange {
+  color: #ff7801;
+  background-color: transparent;
+  outline: 0;
+  border: 0;
+  &:hover {
+    color: white;
+    background-color: #ff7801;
+  }
+
+  &:active:focus {
+    color: white;
+    background-color: black;
+  }
+
+
+}
+
+.black {
+    color: #453a3c;
+    background-color: transparent;
+    outline: 0;
+    border: 0;
+    &:hover {
+      color: white;
+      background-color: #453a3c;
+    }
+  
+    &:active:focus {
+      color: white;
+      background-color: black;
+    }
+  
+  
+  }
+
+
