@@ -3,7 +3,8 @@ import axios from "axios";
 
 import Table from "../components/titles-table/TitlesTable";
 import Button from "react-bootstrap/esm/Button";
-function HomePage() {
+
+function HomePage(): JSX.Element {
   const [titles, setTitles] = useState([]);
   const [isLoaded, setLoadedStatus] = useState(false);
   useEffect(() => {
@@ -19,7 +20,7 @@ function HomePage() {
       });
   });
 
-  let table = !isLoaded ? <Table loaded={false} tableData={[]} /> : <Table loaded={true} tableData={titles} />
+  let table: JSX.Element = !isLoaded ? <Table loaded={false} tableData={[]} /> : <Table loaded={true} tableData={titles} />
 
   return (<>
     <Button variant="primary" href="/new-title">Create New Title</Button>

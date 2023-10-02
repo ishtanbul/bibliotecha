@@ -4,61 +4,61 @@ import TitleForm from "../components/title-form/TitleForm";
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import { AuthorData, GenreData } from "../components/titles-table/TitleData.inf";
 
-function getAllAuthors(setAuthors) {
+
+function getAllAuthors(setAuthors: Function): void {
     axios
         .get("http://localhost:5001/api/get/authors/*")
         .then(response => {
-             setAuthors(response.data)
+            setAuthors(response.data)
         })
         .catch(error => {
             console.log(error);
 
         });
 
-    return [];
+
 }
 
-function getAllGenre(setGenre) {
+function getAllGenre(setGenre: Function): void {
     axios
         .get("http://localhost:5001/api/get/genre/*")
         .then(response => {
-         
+
             setGenre(response.data)
         })
         .catch(error => {
             console.log(error);
 
         });
-
-    return [];
 }
 
-function NewTitlePage() {
-    const [authors, setAuthors] = useState(null);
+function NewTitlePage(): JSX.Element {
+    const [authors, setAuthors] = useState<AuthorData[] | undefined>();
 
-    const [genre, setGenre] = useState(null);
-    const [isLoaded, setLoadedStatus] = useState(false);
+    const [genre, setGenre] = useState<GenreData[] | undefined>();
+    const [isLoaded, setLoadedStatus] = useState<boolean>(false);
 
     useEffect(() => {
-        if(!authors) {
-        getAllAuthors(setAuthors)
+        if (!authors) {
+            getAllAuthors(setAuthors)
         }
         if (!genre) {
             getAllGenre(setGenre)
         }
-       
-       if(authors && genre) {
-        setLoadedStatus(true)
-       } else {
-        setLoadedStatus(false)
-       }
-        
+
+        if (authors && genre) {
+            setLoadedStatus(true)
+        } else {
+            setLoadedStatus(false)
+        }
+
 
     }, [authors, genre]);
 
 
-    let form = isLoaded ? <TitleForm selected={null} authors={authors} genre={genre} type="NEW" buttonText={"Create new title"}></TitleForm> : <></>
+    let form: JSX.Element = isLoaded && genre && authors ? <TitleForm selected={undefined} authors={authors} genre={genre} type="NEW" buttonText={"Create new title"}></TitleForm> : <></>
     return (<>
         <Container>
             <Row>

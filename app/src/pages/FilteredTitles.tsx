@@ -2,17 +2,20 @@ import { memo } from "react";
 
 import Table from "../components/titles-table/TitlesTable";
 import Button from "react-bootstrap/esm/Button";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Location, NavigateFunction, useLocation, useNavigate } from "react-router-dom";
+import { TitleData } from "../components/titles-table/TitleData.inf";
+
 
 function FilteredTitlesPage() {
-    let location = useLocation()
-    let navigate = useNavigate()
+    let location: Location = useLocation()
+    let navigate: NavigateFunction = useNavigate()
 
     const onReset = () => {
         location.state = null
         navigate("/")
     }
-    let titles = location.state?.titles
+
+    let titles: TitleData[] = location.state?.titles
 
     return (<>
         <Button variant="primary" href="/new-title">Create New Title</Button>

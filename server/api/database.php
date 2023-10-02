@@ -407,7 +407,7 @@ class Database
         }
 
         switch ($filter_rule["column_type"]) {
-            case "AUTHOR":
+            case "AUTHORS":
                 return ColumnType::AUTHOR;
 
             case "TITLE":

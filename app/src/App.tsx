@@ -9,6 +9,7 @@ import EditTitlePage from "./pages/EditTitle";
 import FilterTitlePage from "./pages/FilterTitle"
 import FilteredTitlesPage from "./pages/FilteredTitles";
 import { getEndpoint } from "./global/config";
+import React from "react";
 
 class App extends Component {
   render() {
@@ -16,7 +17,7 @@ class App extends Component {
     return (
       <BrowserRouter>
         <Routes>
-          <Route exact path="/" index="true" element={<HomePage />} />
+          <Route path="/" index={true} element={<HomePage />} />
           <Route path="/new-title" element={<NewTitlePage />} />
           <Route path="/edit-title/:titleID" element={<EditTitlePage />}></Route>
           <Route path="/filter-title" element={<FilterTitlePage></FilterTitlePage>}></Route>

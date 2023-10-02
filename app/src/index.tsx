@@ -4,10 +4,17 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const rootEl =  document.getElementById('root')
+
+if(!rootEl) {
+  throw new Error("Root element not found")
+}
+
+const root = ReactDOM.createRoot(rootEl);
 root.render(
   <React.StrictMode>
     <App />
+    <script src="http://localhost:8097"></script>
   </React.StrictMode>
 );
 

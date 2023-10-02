@@ -4,19 +4,20 @@ import Form from 'react-bootstrap/Form'
 
 import './TitleForm.css'
 import Button from 'react-bootstrap/Button'
-import { useRef} from 'react'
+import { FormEvent, FormEventHandler, useRef} from 'react'
 import axios from 'axios'
 import {useNavigate } from 'react-router-dom'
+import { AuthorData, GenreData, TitleData } from '../titles-table/TitleData.inf'
 
-function TitleForm({ selected, authors, genre, type, buttonText }) {
+function TitleForm({ selected, authors, genre, type, buttonText } : {selected?: TitleData, authors: AuthorData[], genre: GenreData[], type: "UPDATE" | "NEW", buttonText: string}) {
 
     let navigate = useNavigate()
  
 
-    let form = useRef(null)
+    let form: React.MutableRefObject<null | any> = useRef(null)
 
 
-    const handleSubmit = (e) => {
+    const handleSubmit: FormEventHandler = (e: FormEvent) => {
         e.preventDefault()
 
         let formData = new FormData(form.current)
@@ -60,7 +61,7 @@ function TitleForm({ selected, authors, genre, type, buttonText }) {
     </>)
 }
 
-function TitleField({ selectedTitle }) {
+function TitleField({ selectedTitle }: {selectedTitle?: string}) {
     let field;
     if (selectedTitle) {
    
@@ -73,29 +74,29 @@ function TitleField({ selectedTitle }) {
     </>)
 }
 
-function AuthorSelect({ selectedAuthors, authors }) {
-    let selectedAuthorIDs = selectedAuthors ? selectedAuthors.map((author) => author.id) : null
+function AuthorSelect({ selectedAuthors, authors }: {selectedAuthors?: AuthorData[], authors: AuthorData[]}) {
+    let selectedAuthorIDs: readonly string[] | undefined = selectedAuthors ? selectedAuthors.map((author) => author.id.toString()) : undefined
 
     let options = authors.map((author, index) => {
         return (<option key={index} value={author.id}>{author.name}</option>)
     })
     return (<>
         <Form.Label><span className='fw-bold'>Author</span></Form.Label>
-        <Form.Select className='mb-3' multiple htmlSize='5' name='author_id[]' form="form" defaultValue={selectedAuthorIDs}>
+        <Form.Select className='mb-3' multiple htmlSize={5} name='author_id[]' form="form" defaultValue={selectedAuthorIDs}>
             {options}
         </Form.Select>
 
     </>)
 }
 
-function GenreSelect({ selectedGenre, genre }) {
-    let selectedGenreIDs = selectedGenre ? selectedGenre.map((genre) => genre.id) : null
+function GenreSelect({ selectedGenre, genre }: {selectedGenre?: GenreData[], genre: GenreData[]}) {
+    let selectedGenreIDs: readonly string[] | undefined = selectedGenre ? selectedGenre.map((genre) => genre.id.toString()) : undefined
     let options = genre.map((genre, index) => {
         return (<option key={index} value={genre.id}>{genre.genre}</option>)
     })
     return (<>
         <Form.Label><span className='fw-bold'>Genre</span></Form.Label>
-        <Form.Select className='mb-3' multiple htmlSize='5' name='genre_id[]' form="form" defaultValue={selectedGenreIDs}>
+        <Form.Select className='mb-3' multiple htmlSize={5} name='genre_id[]' form="form" defaultValue={selectedGenreIDs}>
             {options}
         </Form.Select>
 

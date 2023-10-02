@@ -5,8 +5,9 @@ import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { useParams } from "react-router-dom";
+import { AuthorData, GenreData, TitleData } from "../components/titles-table/TitleData.inf";
 
-function getAllAuthors(setAuthors) {
+function getAllAuthors(setAuthors: Function): void {
     axios
         .get("http://localhost:5001/api/get/authors/*")
         .then(response => {
@@ -19,7 +20,7 @@ function getAllAuthors(setAuthors) {
 
     }
 
-function getAllGenre(setGenre) {
+function getAllGenre(setGenre: Function): void {
     axios
         .get("http://localhost:5001/api/get/genre/*")
         .then(response => {
@@ -33,7 +34,7 @@ function getAllGenre(setGenre) {
 }
 
 
-function getSelectedValues(titleID, setSelectedValues) {
+function getSelectedValues(titleID: string, setSelectedValues: Function) {
     axios
     .get(`http://localhost:5001/api/get/titles/${titleID}`)
     .then(response => {
@@ -45,12 +46,16 @@ function getSelectedValues(titleID, setSelectedValues) {
     });
 }
 
-function EditTitlePage() {
+function EditTitlePage(): JSX.Element {
     const {titleID} = useParams()
-    const [authors, setAuthors] = useState(null);
-    const [selectedValues, setSelectedValues] = useState(null)
-    const [genre, setGenre] = useState(null);
+    const [authors, setAuthors] = useState<AuthorData[] | undefined>();
+    const [selectedValues, setSelectedValues] = useState<TitleData | undefined>()
+    const [genre, setGenre] = useState<GenreData[] | undefined>();
     const [isLoaded, setLoadedStatus] = useState(false);
+
+    if(!titleID) {
+        throw new Error("Title ID not found")
+    }
 
     useEffect(() => {
         if(!authors) {
@@ -74,7 +79,7 @@ function EditTitlePage() {
     }, [authors, genre, selectedValues, titleID]);
 
 
-    let form = isLoaded ? <TitleForm selected={selectedValues} authors={authors} genre={genre} type="UPDATE" buttonText={"Confirm changes"}></TitleForm> : <></>
+    let form = isLoaded && authors && genre ? <TitleForm selected={selectedValues} authors={authors} genre={genre} type="UPDATE" buttonText={"Confirm changes"}></TitleForm> : <></>
     return (<>
         <Container>
             <Row>
